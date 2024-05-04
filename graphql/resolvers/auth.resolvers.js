@@ -5,7 +5,7 @@ const {events} = require("./merge.resolver")
 
 const transformUser = (user) => {
     return{...user._doc, 
-        id: user.id, 
+        _id: user._id, 
         password: null,
         createdEvents: events.bind(this, user._doc.createdEvents)}
 }

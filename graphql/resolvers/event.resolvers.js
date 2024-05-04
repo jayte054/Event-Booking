@@ -6,7 +6,7 @@ const {theUser} = require("./merge.resolver")
 const transformEvent = async (event) => {
     return {
         ...event._doc, 
-        id: event.id, 
+        _id: event._id, 
         date: dateToString(event._doc.date),
         creator: theUser.bind(this, event.creator)
     }
@@ -42,9 +42,11 @@ module.exports = {
                 if(!user) {
                     throw new Error("user does not exist")
                 }
-                console.log(user)
+                
                 user.createdEvents.push(event)
-                return user.save()
+                console.log(user)
+                await user.save()
+                return event
             }
             eventUser()
             event.save()

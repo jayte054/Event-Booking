@@ -6,7 +6,7 @@ const {theUser, getSingleEvent} = require("./merge.resolver")
 const transformBooking = async (booking) => {
     return {
         ...booking.doc,
-                    id: booking.id,
+                    _id: booking._id,
                     user: theUser.bind(this, booking._doc.user),
                     event: getSingleEvent.bind(this, booking._doc.event),
                     createdAt: dateToString(booking._doc.createdAt),
