@@ -1,7 +1,15 @@
 const Event = require("../../models/event.models")
 const {dateToString} = require("../../helpers/date")
 const User = require("../../models/user.model")
+const DataLoader = require("dataloader")
 
+const eventLoader = new DataLoader((eventIds) => {
+    return events(eventIds)
+})
+
+const userLoader = new DataLoader((userIds) => {
+    return User.find({_id: {$in: userIds}})
+})
 
 
 const transformEvent = async (event) => {
@@ -16,7 +24,7 @@ const transformEvent = async (event) => {
 const theUser = async (userId) => {
     
     try{
-        const response = await User.findById(userId)
+        const response = await userLoader.load(userId.toString())
         console.log("rr", response)
         // if (!response) {
         //     // If response is null (user not found), return null or handle the error as appropriate
@@ -26,7 +34,7 @@ const theUser = async (userId) => {
             return {
                     ...response._doc, 
                     _id: response._id,
-                    createdEvents: events.bind(this, response._doc.createdEvents)
+                    createdEvents: eventLoader.load.bind(this, response._doc.createdEvents)
                 }
     }catch(error) {
         console.log(error) 
@@ -47,9 +55,9 @@ const events = async (eventIds) => {
 }
 
 const getSingleEvent= async (eventId) => {
-    const event = await Event.findById(eventId);
+    const event = await eventLoader.load(eventId.toString());
     try{
-        return transformEvent(event)
+        return event
     }catch(error) {
         throw error
     }
