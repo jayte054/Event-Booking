@@ -34,7 +34,7 @@ const theUser = async (userId) => {
             return {
                     ...response._doc, 
                     _id: response._id,
-                    createdEvents: eventLoader.load.bind(this, response._doc.createdEvents)
+                    createdEvents: () => eventLoader.loadMany.bind(response._doc.createdEvents)
                 }
     }catch(error) {
         console.log(error) 
@@ -44,6 +44,12 @@ const theUser = async (userId) => {
 
 const events = async (eventIds) => {
     const response = await Event.find({_id: { $in: eventIds}})
+    response.sort((a,b) => {
+        return (
+            eventIds.indexOf(a._id.toString()) - eventIds.indexOf(b._id.toString())
+        )
+    })
+    console.log(response, eventIds)
     try {
         return response.map(event => {
             return transformEvent(event)
